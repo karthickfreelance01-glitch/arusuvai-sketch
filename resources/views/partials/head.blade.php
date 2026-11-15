@@ -16,3 +16,6 @@
 @endphp
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,500..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800{!! $fontExtra !!}&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}?v=1">
+@if(config('arusuvai.static'))
+<script>window.ARU_STATIC = @json(['base' => config('arusuvai.static_base'), 'links' => array_filter(config('arusuvai.payment_links'))]);</script>
+@endif

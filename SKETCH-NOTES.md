@@ -25,3 +25,26 @@ Price is always recalculated on the server (PaymentController). Coupons: WELCOME
 ## Languages
 English, Tamil, Malayalam, Hindi via `lang/ta.json`, `lang/ml.json`, `lang/hi.json`
 (switch: `/lang/{en|ta|ml|hi}`). Any string not in the file falls back to English.
+
+## Static deploy (Render Static Site)
+Render static sites can't run PHP, so the site is exported to plain HTML:
+
+    php artisan export:static      # writes ./dist  (English at /, Tamil /ta, Malayalam /ml, Hindi /hi)
+
+Commit and push `dist/`, then on Render: Build Command `echo "prebuilt"`, Publish Directory `dist`.
+Re-run the export and push again whenever you change a page.
+
+Stripe on the static site uses **Payment Links** (no server needed). Create one per plan in
+Stripe Dashboard → Payment Links (currency AED, "Allow promotion codes" on, after-payment
+redirect to `https://YOUR-SITE/payment/success/?mode=paid`), then add to .env before exporting:
+
+    SITE_URL=https://arusuvai-sketch.onrender.com
+    STRIPE_LINK_3_MON_SUN=https://buy.stripe.com/...
+    STRIPE_LINK_3_MON_SAT=...
+    STRIPE_LINK_3_MON_FRI=...
+    STRIPE_LINK_2_MON_SUN=...
+    STRIPE_LINK_2_MON_SAT=...
+    STRIPE_LINK_2_MON_FRI=...
+    STRIPE_LINK_1_MON_SUN=...
+
+A plan without a link falls back to the demo success page.

@@ -263,7 +263,8 @@
   const plans = @json($plans);
   const menu = @json($menu);
   const slots = @json(collect($slots)->map(fn($s) => ['label' => __($s['label']), 'time' => $s['time'], 'icon' => $s['icon']]));
-  const img = name => `{{ asset('assets/img') }}/${name}`;
+  const img = name => `${window.ARU_STATIC ? '/assets/img' : @json(asset('assets/img'))}/${name}`;
+  const bookUrl = window.ARU_STATIC ? ARU_STATIC.base + '/book-now/' : @json(route('book'));
   const T = { na: @json(__('Mon–Sun only')), perMonth: @json(__('per month')), early: @json(__('Early stop')), day: @json(__('day')) };
 
   // Plan prices toggle
@@ -280,7 +281,7 @@
         amt.classList.remove('flip');
       }, 180);
       const a = card.querySelector('[data-book]');
-      a.href = `{{ route('book') }}?plan=${card.dataset.plan}&schedule=${price ? sched : 'mon-sun'}`;
+      a.href = `${bookUrl}?plan=${card.dataset.plan}&schedule=${price ? sched : 'mon-sun'}`;
     });
   });
 
@@ -295,7 +296,9 @@
   };
   const tabs = document.querySelectorAll('.day-tab');
   tabs.forEach(t => t.addEventListener('click', () => { tabs.forEach(x => x.classList.remove('on')); t.classList.add('on'); render(t.dataset.day); }));
-  render((document.querySelector('.day-tab.on') || tabs[0]).dataset.day);
+  const todayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+  tabs.forEach(x => x.classList.toggle('on', x.dataset.day === todayName));
+  render(todayName);
 
   // Early stop calculator
   const days = document.getElementById('calc-days');

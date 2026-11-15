@@ -248,8 +248,33 @@
     if (!validate(1) || !validate(2)) { e.preventDefault(); return; }
     if (!document.getElementById('agree').checked) { e.preventDefault(); toast('⚠️', T.required, '⚠️'); return; }
     const btn = document.getElementById('pay-btn'); btn.disabled = true; btn.innerHTML = '⏳ ' + T.redir;
+
+    // Static hosting: no server, so go to a Stripe Payment Link (or demo success page)
+    if (window.ARU_STATIC) {
+      e.preventDefault();
+      const k = val('plan'), sched = val('schedule'), p = plans[k], sub = p.prices[sched];
+      const disc = !coupon ? 0 : (coupon.type === 'percent' ? Math.round(sub * coupon.value / 100) : Math.min(sub, coupon.value));
+      const ref = 'ARU-' + Math.random().toString(16).slice(2, 10).toUpperCase();
+      const booking = { reference: ref, plan: p.name, schedule: schedules[sched].label, start: f.start_date.value, total: sub - disc, discount: disc,
+        meals: [...document.querySelectorAll('#meal-opts input:checked')].map(c => c.value).join(', '), name: f.name.value, phone: f.phone.value };
+      try { sessionStorage.setItem('aru_booking', JSON.stringify(booking)); } catch (_) {}
+      const link = ARU_STATIC.links[k + '.' + sched];
+      const method = val('pay_method');
+      if (method === 'stripe' && link) {
+        const u = new URL(link); u.searchParams.set('client_reference_id', ref);
+        if (f.email.value) u.searchParams.set('prefilled_email', f.email.value);
+        location.href = u.toString();
+      } else {
+        location.href = ARU_STATIC.base + '/payment/success/?mode=' + (method === 'cash' ? 'cash' : 'demo');
+      }
+    }
   });
 
+  // Pre-select from the URL (needed on the static site)
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('plan') && plans[qs.get('plan')]) f.querySelector(`[name=plan][value="${qs.get('plan')}"]`).checked = true;
+  if (qs.get('schedule')) { const r = f.querySelector(`[name=schedule][value="${qs.get('schedule')}"]`); if (r && plans[val('plan')].prices[qs.get('schedule')]) r.checked = true; }
+  if (qs.get('coupon')) { f.coupon.value = qs.get('coupon'); coupon = coupons[qs.get('coupon').toUpperCase()] || null; document.getElementById('s-code').textContent = coupon ? '(' + qs.get('coupon').toUpperCase() + ')' : ''; }
   sync();
   @if ($errors->any()) go(3); @endif
 })();

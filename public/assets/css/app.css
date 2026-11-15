@@ -590,3 +590,4 @@ html:not([lang=en]) h1,html:not([lang=en]) h2,html:not([lang=en]) h3{line-height
 html:not([lang=en]) .hero h1{font-size:clamp(36px,4.4vw,64px)}
 html:not([lang=en]) .section-head h2{font-size:clamp(28px,3.4vw,46px)}
 html:not([lang=en]) .page-hero h1{font-size:clamp(32px,4vw,56px)}
+[hidden]{display:none!important}

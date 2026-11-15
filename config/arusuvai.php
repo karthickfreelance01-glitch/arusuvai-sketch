@@ -23,6 +23,23 @@ return [
         'currency'   => 'AED',
     ],
 
+    // Static export (php artisan export:static) – used for Render / any static host
+    'static'      => false,
+    'static_base' => '',
+    'site_url'    => env('SITE_URL', 'https://arusuvai-sketch.onrender.com'),
+
+    // Stripe Payment Links (static site checkout). Create one per plan in
+    // Stripe Dashboard → Payment Links and paste the URLs in .env.
+    'payment_links' => [
+        'three.mon-sun' => env('STRIPE_LINK_3_MON_SUN'),
+        'three.mon-sat' => env('STRIPE_LINK_3_MON_SAT'),
+        'three.mon-fri' => env('STRIPE_LINK_3_MON_FRI'),
+        'two.mon-sun'   => env('STRIPE_LINK_2_MON_SUN'),
+        'two.mon-sat'   => env('STRIPE_LINK_2_MON_SAT'),
+        'two.mon-fri'   => env('STRIPE_LINK_2_MON_FRI'),
+        'one.mon-sun'   => env('STRIPE_LINK_1_MON_SUN'),
+    ],
+
     'stripe' => [
         'key'        => env('STRIPE_KEY'),
         'secret'     => env('STRIPE_SECRET'),
